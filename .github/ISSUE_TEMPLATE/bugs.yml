@@ -1,23 +1,41 @@
 name: Bug Report
-description: I would like to report a bug
+description: Use this template to report bugs and help improve our product!
 title: "Bug Report"
-labels: [bug report]
+labels: [bug report, needs triage]
 body:
   - type: input
     id: title
     attributes:
-      label: Bug
-      placeholder: Insert a short title for the bug report here
+      label: Bug Title
+      placeholder: Briefly describe the bug
     validations:
       required: true
   - type: textarea
-    id: Additional
+    id: description
     attributes:
-      label: Additional Context 
-      description: Details about the bug, how it was first encountered, steps that can be taken to reproduce the bug
+      label: Detailed Description
+      description: |
+        Please provide a detailed description of the bug, including:
+        - How you encountered it
+        - The expected behavior
+        - The actual behavior
+        - Any relevant error messages
     validations:
       required: true
+  - type: input
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: List the steps to reproduce the bug
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Specify the environment (e.g., OS, browser, app version)
   - type: markdown
     attributes:
       value: |
-        If you feel this bug report template is lacking, you can also create a feature request issue [here](https://github.com/GDSC-University-of-Benin/the-intern-placee/issues) on suggested improvements
+        Thank you for reporting this bug! Your input helps us improve the product. 
+        If you have suggestions for enhancements or features, please consider submitting a feature request [here](https://github.com/GDSC-University-of-Benin/the-intern-placee/issues).
