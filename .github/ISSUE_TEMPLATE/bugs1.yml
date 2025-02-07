@@ -1,23 +1,22 @@
 name: "Bug Report"
 description: Create a new ticket for a bug.
-title: "[BUG] - <title>"
-labels: [
-  "bug"
-]
+title: "[BUG] "
+labels: ["bug"]
 body:
   - type: textarea
     id: description
     attributes:
       label: "Description"
-      description: Please enter an explicit description of your issue
+      description: Please enter an explicit description of your issue.
       placeholder: Short and explicit description of your incident...
     validations:
       required: true
+
   - type: textarea
     id: reprod
     attributes:
       label: "Reproduction steps"
-      description: Please enter an explicit description of your issue
+      description: Please enter an explicit description of your issue.
       placeholder: |
         1. Go to '...'
         2. Click on '....'
@@ -26,29 +25,49 @@ body:
       render: bash
     validations:
       required: true
+
+  - type: checkboxes
+    id: optional_sections
+    attributes:
+      label: "Optional Details"
+      description: Select the details you'd like to provide (optional).
+      options:
+        - label: "Add Screenshots"
+          value: screenshots
+        - label: "Add Logs"
+          value: logs
+        - label: "Specify Browsers"
+          value: browsers
+        - label: "Specify OS"
+          value: os
+
   - type: textarea
     id: screenshot
     attributes:
       label: "Screenshots"
-      description: If applicable, add screenshots to help explain your problem.
+      description: Add screenshots to help explain your problem.
       placeholder: |
         ![DESCRIPTION](LINK.png)
       render: bash
     validations:
       required: false
+    if: "optional_sections.includes('screenshots')"
+
   - type: textarea
     id: logs
     attributes:
       label: "Logs"
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      description: Paste any relevant log output. This will be formatted as code.
       render: bash
     validations:
       required: false
+    if: "optional_sections.includes('logs')"
+
   - type: dropdown
     id: browsers
     attributes:
       label: "Browsers"
-      description: What browsers are you seeing the problem on ?
+      description: What browsers are you seeing the problem on?
       multiple: true
       options:
         - Firefox
@@ -58,11 +77,13 @@ body:
         - Opera
     validations:
       required: false
+    if: "optional_sections.includes('browsers')"
+
   - type: dropdown
     id: os
     attributes:
       label: "OS"
-      description: What is the impacted environment ?
+      description: What is the impacted environment?
       multiple: true
       options:
         - Windows
@@ -70,3 +91,4 @@ body:
         - Mac
     validations:
       required: false
+    if: "optional_sections.includes('os')"
