@@ -1,42 +1,59 @@
-name: Clean Up Empty Sections
+name: Clean Up Empty Sections  # Name of the GitHub Actions workflow
 
 on:
-  issues:
-    types: [opened]
+  issues:  # Trigger the workflow when an issue event occurs
+    types: [opened]  # Only trigger when a new issue is created
 
 jobs:
-  clean-issue:
-    runs-on: ubuntu-latest
+  clean-issue:  # Define a job named 'clean-issue'
+    runs-on: ubuntu-latest  # The job will run on the latest Ubuntu runner
 
     steps:
-    - name: Remove Empty Sections
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        ISSUE_NUMBER: ${{ github.event.issue.number }}
-        REPO: ${{ github.repository }}
+    - name: Remove Empty Sections  # Name of this step for clarity
+      env:  # Set environment variables
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication (auto-provided by GitHub)
+        ISSUE_NUMBER: ${{ github.event.issue.number }}  # The number of the issue that triggered the workflow
+        REPO: ${{ github.repository }}  # The repository where the issue was created
       run: |
-        # Get the issue body
-        BODY=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER" | jq -r '.body')
+        # Get the issue body using GitHub API
+        BODY=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \  # Make an API request to fetch the issue details
+          "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER" | jq -r '.body')  # Extract the issue body using jq
 
-        # Function to remove section if it's empty
+        # Placeholder content based on issue template
+        declare -A PLACEHOLDERS=(
+          ["Screenshots"]='![DESCRIPTION](LINK.png)'
+          ["Logs"]=''
+          ["Reproduction steps"]=$'1. Go to \'...\'\n2. Click on \'....\'\n3. Scroll down to \'....\'\n4. See error'
+        )
+
+        # Function to remove a section if it's empty or contains only placeholder content
         clean_section() {
           LABEL="$1"
           BODY=$(echo "$BODY" | sed "/^### $LABEL$/,/^### /{/^$/d; /^### $LABEL$/d}" | sed '/^### '"$LABEL"'$/,$d')
         }
 
         # Check and clean optional sections
-        for SECTION in "Screenshots" "Logs" "Browsers" "OS"; do
-          # If section exists but is empty, remove it
+        for SECTION in "Screenshots" "Logs" "Browsers" "OS" "Reproduction steps"; do
           if echo "$BODY" | grep -q "### $SECTION"; then
-            CONTENT=$(echo "$BODY" | sed -n "/^### $SECTION$/,/^### /p" | tail -n +2 | grep -v '^###' | tr -d '[:space:]')
-            if [ -z "$CONTENT" ]; then
+            CONTENT=$(echo "$BODY" | sed -n "/^### $SECTION$/,/^### /p" | tail -n +2 | grep -v '^###')
+            CONTENT_STRIPPED=$(echo "$CONTENT" | tr -d '[:space:]')
+
+            # Handle empty content or placeholder text
+            PLACEHOLDER="${PLACEHOLDERS[$SECTION]}"
+            PLACEHOLDER_STRIPPED=$(echo "$PLACEHOLDER" | tr -d '[:space:]')
+
+            if [ -z "$CONTENT_STRIPPED" ] || [ "$CONTENT_STRIPPED" = "$PLACEHOLDER_STRIPPED" ]; then
+              clean_section "$SECTION"
+            fi
+
+            # Handle empty code blocks
+            if echo "$CONTENT" | grep -Eq '^```(bash)?\s*```$'; then
               clean_section "$SECTION"
             fi
           fi
         done
 
-        # Update the issue with the cleaned body
+        # Update the issue with the cleaned body using GitHub API
         curl -s -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
           -d "{\"body\": $(jq -R -s <<<"$BODY")}" \
           "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER"
