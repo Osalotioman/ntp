@@ -1,0 +1,42 @@
+name: Clean Up Empty Sections
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  clean-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Remove Empty Sections
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ISSUE_NUMBER: ${{ github.event.issue.number }}
+        REPO: ${{ github.repository }}
+      run: |
+        # Get the issue body
+        BODY=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER" | jq -r '.body')
+
+        # Function to remove section if it's empty
+        clean_section() {
+          LABEL="$1"
+          BODY=$(echo "$BODY" | sed "/^### $LABEL$/,/^### /{/^$/d; /^### $LABEL$/d}" | sed '/^### '"$LABEL"'$/,$d')
+        }
+
+        # Check and clean optional sections
+        for SECTION in "Screenshots" "Logs" "Browsers" "OS"; do
+          # If section exists but is empty, remove it
+          if echo "$BODY" | grep -q "### $SECTION"; then
+            CONTENT=$(echo "$BODY" | sed -n "/^### $SECTION$/,/^### /p" | tail -n +2 | grep -v '^###' | tr -d '[:space:]')
+            if [ -z "$CONTENT" ]; then
+              clean_section "$SECTION"
+            fi
+          fi
+        done
+
+        # Update the issue with the cleaned body
+        curl -s -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+          -d "{\"body\": $(jq -R -s <<<"$BODY")}" \
+          "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER"
