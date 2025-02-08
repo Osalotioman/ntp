@@ -1,0 +1,14 @@
+- name: Comment Issue Content
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    ISSUE_NUMBER: ${{ github.event.issue.number }}
+    REPO: ${{ github.repository }}
+  run: |
+    BODY=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+      "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER" | jq -r '.body')
+
+    # Properly escape the body and add Content-Type header
+    curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d "{\"body\": \"${BODY//$'\n'/\\n}\"}" \
+      "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER/comments"
