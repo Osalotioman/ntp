@@ -19,35 +19,19 @@ jobs:
         BODY=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \  # Make an API request to fetch the issue details
           "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER" | jq -r '.body')  # Extract the issue body using jq
 
-        # Placeholder content based on issue template
-        declare -A PLACEHOLDERS=(
-          ["Screenshots"]='![DESCRIPTION](LINK.png)'
-          ["Logs"]=''
-          ["Reproduction steps"]=$'1. Go to \'...\'\n2. Click on \'....\'\n3. Scroll down to \'....\'\n4. See error'
-        )
-
-        # Function to remove a section if it's empty or contains only placeholder content
+        # Function to remove empty sections based on specific patterns
         clean_section() {
           LABEL="$1"
-          BODY=$(echo "$BODY" | sed "/^### $LABEL$/,/^### /{/^$/d; /^### $LABEL$/d}" | sed '/^### '"$LABEL"'$/,$d')
+          BODY=$(echo "$BODY" | sed -E "/^### $LABEL$/,/^### /{/^```(bash)?\s*```$/d; /^_No response_$/d; /^### $LABEL$/d}" | sed '/^### '"$LABEL"'$/,$d')
         }
 
-        # Check and clean optional sections
-        for SECTION in "Screenshots" "Logs" "Browsers" "OS" "Reproduction steps"; do
+        # Check and clean specific sections
+        for SECTION in "Screenshots" "Logs" "Browsers" "OS"; do
           if echo "$BODY" | grep -q "### $SECTION"; then
             CONTENT=$(echo "$BODY" | sed -n "/^### $SECTION$/,/^### /p" | tail -n +2 | grep -v '^###')
-            CONTENT_STRIPPED=$(echo "$CONTENT" | tr -d '[:space:]')
 
-            # Handle empty content or placeholder text
-            PLACEHOLDER="${PLACEHOLDERS[$SECTION]}"
-            PLACEHOLDER_STRIPPED=$(echo "$PLACEHOLDER" | tr -d '[:space:]')
-
-            if [ -z "$CONTENT_STRIPPED" ] || [ "$CONTENT_STRIPPED" = "$PLACEHOLDER_STRIPPED" ]; then
-              clean_section "$SECTION"
-            fi
-
-            # Handle empty code blocks
-            if echo "$CONTENT" | grep -Eq '^```(bash)?\s*```$'; then
+            # Remove sections with empty code blocks or '_No response_'
+            if echo "$CONTENT" | grep -Eq '^```(bash)?\s*```$' || echo "$CONTENT" | grep -q '^_No response_$'; then
               clean_section "$SECTION"
             fi
           fi
