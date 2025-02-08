@@ -1,4 +1,4 @@
-- name: Comment Issue Content
+name: Comment Issue Content
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     ISSUE_NUMBER: ${{ github.event.issue.number }}
