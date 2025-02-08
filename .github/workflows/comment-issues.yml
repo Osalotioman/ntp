@@ -1,14 +1,29 @@
-name: Comment Issue Content
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    ISSUE_NUMBER: ${{ github.event.issue.number }}
-    REPO: ${{ github.repository }}
-  run: |
-    BODY=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-      "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER" | jq -r '.body')
+name: Echo Issue Content  # Name of the GitHub Actions workflow
 
-    # Properly escape the body and add Content-Type header
-    curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
-      -H "Content-Type: application/json" \
-      -d "{\"body\": \"${BODY//$'\n'/\\n}\"}" \
-      "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER/comments"
+on:
+  issues:  # Trigger the workflow when an issue event occurs
+    types: [opened]  # Only trigger when a new issue is created
+
+jobs:
+  echo-issue:  # Define a job named 'echo-issue'
+    runs-on: ubuntu-latest  # The job will run on the latest Ubuntu runner
+
+    steps:
+    - name: Comment Issue Content  # Name of this step for clarity
+      env:  # Set environment variables
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication (auto-provided by GitHub)
+        ISSUE_NUMBER: ${{ github.event.issue.number }}  # The number of the issue that triggered the workflow
+        REPO: ${{ github.repository }}  # The repository where the issue was created
+      run: |
+        # Get the issue body using GitHub API
+        BODY=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER" | jq -r '.body')
+
+        # Properly escape newlines and add Content-Type header
+        ESCAPED_BODY=$(echo "$BODY" | sed ':a;N;$!ba;s/\n/\\n/g')
+
+        # Comment on the issue with the same body
+        curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{\"body\": \"$ESCAPED_BODY\"}" \
+          "https://api.github.com/repos/$REPO/issues/$ISSUE_NUMBER/comments"
