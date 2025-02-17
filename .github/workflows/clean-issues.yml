@@ -26,19 +26,27 @@ jobs:
             let newBody1 = "";
 
             for(let i=0; i<newBody.length; ++i){
-                if(newBody[i].includes("### Screenshots") && i+4<newBody.length){
-                    if(newBody[i+2].includes("```bash") && newBody[i+4].includes("```")){
-                        newBody[i] = "_-1";
-                        newBody[i+1] = "_-1";
-                        newBody[i+2] = "_-1";
-                        newBody[i+3] = "_-1";
-                        newBody[i+4] = "_-1";
+                if(newBody[i].includes("### Screenshots") && i+5<newBody.length){
+                    if(newBody.slice(i, i+6).join('').replace(/\s+/g, '') === "###Screenshots```bash```"){
+                        newBody.splice(i, 6, ...Array(6).fill(""));
                     }
                 }
-                if(newBody[i].includes("_No response_")){
-                    newBody[i] = "_-1";
+                if(newBody[i].includes("### Logs") && i+5<newBody.length){
+                    if(newBody.slice(i, i+6).join('').replace(/\s+/g, '') === "###Logs```bash```"){
+                        newBody.splice(i, 6, ...Array(6).fill(""));
+                    }
                 }
-                if(newBody[i] != "_-1"){
+                if(newBody[i].includes("### Browsers") && i+2<newBody.length){
+                    if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###Browsers"){
+                        newBody.splice(i, 3, ...Array(3).fill(""));
+                    }
+                }
+                if(newBody[i].includes("### OS") && i+2<newBody.length){
+                    if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###OS"){
+                        newBody.splice(i, 3, ...Array(3).fill(""));
+                    }
+                }
+                if(newBody[i] != ""){
                     newBody1 += newBody[i] + '\n';
                 }
             }
