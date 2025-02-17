@@ -37,12 +37,12 @@ jobs:
                     }
                 }
                 if(newBody[i].includes("### Browsers") && i+2<newBody.length){
-                    if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###Browsers"){
+                    if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###Browsers_No response_"){
                         newBody.splice(i, 3, ...Array(3).fill(""));
                     }
                 }
                 if(newBody[i].includes("### OS") && i+2<newBody.length){
-                    if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###OS"){
+                    if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###OS_No response_"){
                         newBody.splice(i, 3, ...Array(3).fill(""));
                     }
                 }
