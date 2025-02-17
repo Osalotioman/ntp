@@ -22,13 +22,13 @@ for(let i=0; i<newBody.length; ++i){
             newBody.splice(i, 6, ...Array(6).fill(""));
         }
     }
-    if(newBody[i].includes("### Browsers") && i+2<newBody.length){
-        if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###Browsers"){
-            newBody.splice(i, 3, ...Array(3).fill(""));
+    if(newBody[i].includes("### Browsers") && i+3<newBody.length){
+        if(newBody.slice(i, i+4).join('').replace(/\s+/g, '') === "###Browsers_Noresponse_"){
+            newBody.splice(i, 4, ...Array(4).fill(""));
         }
     }
     if(newBody[i].includes("### OS") && i+2<newBody.length){
-        if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###OS"){
+        if(newBody.slice(i, i+3).join('').replace(/\s+/g, '') === "###OS_Noresponse_"){
             newBody.splice(i, 3, ...Array(3).fill(""));
         }
     }
