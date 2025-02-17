@@ -24,13 +24,15 @@ jobs:
 
             let newBody = issue.body.split('\n');
             let newBody1 = "";
-            
+
             for(let i=0; i<newBody.length; ++i){
-                if(newBody[i].includes("### Screenshots") && i+3<newBody.length){
-                    if(newBody[i+1].includes("```bash") && newBody[i+3].includes("```")){
+                if(newBody[i].includes("### Screenshots") && i+4<newBody.length){
+                    if(newBody[i+2].includes("```bash") && newBody[i+4].includes("```")){
                         newBody[i] = "_-1";
                         newBody[i+1] = "_-1";
                         newBody[i+2] = "_-1";
+                        newBody[i+3] = "_-1";
+                        newBody[i+4] = "_-1";
                     }
                 }
                 if(newBody[i].includes("_No response_")){
