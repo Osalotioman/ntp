@@ -1,0 +1,17 @@
+name: Issue Comment Bot
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post comment on new issue
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: "Thanks for opening this issue! Someone will look into it soon."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
