@@ -1,0 +1,54 @@
+name: Remove Empty Sections from Issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  remove-empty-sections:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Remove empty sections
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            // Helper function to check if a section is empty
+            const isSectionEmpty = (section) => {
+              // Remove backticks, placeholders, and whitespace
+              const content = section
+                .replace(/```bash/g, '') // Remove code block markers
+                .replace(/```/g, '') // Remove any remaining backticks
+                .replace(/_No response_/g, '') // Remove placeholders
+                .trim(); // Remove leading/trailing whitespace
+
+              return !content; // Return true if the section is empty
+            };
+
+            // Split the issue body into sections
+            const sections = issue.body.split('### '); // Split by "###" to separate sections
+            let newBody = '';
+
+            // Iterate through sections and keep only non-empty ones
+            for (const section of sections) {
+              if (section.trim() && !isSectionEmpty(section)) {
+                newBody += `### ${section}\n\n`;
+              }
+            }
+
+            // Update the issue with the new body
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: newBody.trim(),
+            });
