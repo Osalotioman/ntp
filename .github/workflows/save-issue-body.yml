@@ -1,0 +1,43 @@
+name: Save New Issue Body to File
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  save-issue-body:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get issue body and save to file
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const issueBody = issue.body;
+
+            const fs = require('fs');
+            const path = './issue_body.txt';
+
+            fs.writeFileSync(path, issueBody);
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'issue_body.txt',
+              message: 'Save issue body for local testing',
+              content: Buffer.from(issueBody).toString('base64'),
+              committer: {
+                name: 'GitHub Actions',
+                email: 'actions@github.com',
+              },
+            });
