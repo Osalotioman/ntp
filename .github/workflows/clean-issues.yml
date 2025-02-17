@@ -23,21 +23,24 @@ jobs:
             });
 
             const newBody = `${issue.body}`;
+            const newBody1 = "";
             newBody.split('\n');
             for(let i=0; i<newBody.length; ++i){
                 if(newBody[i].startsWith("### Screenshots") && i+2<newBody.length){
                     if(newBody[i+1] == "```bash" && newBody[i+2] == "```"){
-                        newBody[i] = "";
-                        newBody[i+1] = "";
-                        newBody[i+2] = "";
+                        newBody[i] = "_-1";
+                        newBody[i+1] = "_-1";
+                        newBody[i+2] = "_-1";
                     }
                 }
+                if(newBody[i] != "_-1"){
+                    newBody1 += newBody[i] + '\n';
+                }
             }
-            newBody = newBody.join('\n');
 
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: newBody,
+              body: newBody1,
             });
