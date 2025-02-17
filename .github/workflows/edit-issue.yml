@@ -1,21 +1,21 @@
-name: Edit New Issue
+name: Edit Issue Body on New Issue
 
 on:
   issues:
-    types: [opened]  # Trigger when an issue is opened
+    types: [opened]
 
 jobs:
-  edit-issue:
+  update-issue-body:
     runs-on: ubuntu-latest
     steps:
-      - name: Edit Issue Body
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Edit issue body
         uses: octokit/request-action@v2.x
         with:
-          route: "/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}"
+          route: /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
           mediaType: '{"previews": ["mercy"]}'
-          data: |
-            {
-              "body": "**Edited Issue:**\n\n${{ github.event.issue.body }}\n\n_Auto-edited by bot._"
-            }
+          data: '{"body": "This is the completely new body content for the issue.\\n\\n_This was updated by the bot._"}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
