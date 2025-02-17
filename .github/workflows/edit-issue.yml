@@ -11,9 +11,9 @@ jobs:
       - name: Edit Issue Body
         uses: octokit/request-action@v2.x
         with:
-          route: PATCH /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
-          mediaType: '{" previews": ["mercy"] }'  # Optional, if needed by API
-          body: |
+          route: "/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}"
+          mediaType: '{"previews": ["mercy"]}'
+          data: |
             {
               "body": "**Edited Issue:**\n\n${{ github.event.issue.body }}\n\n_Auto-edited by bot._"
             }
