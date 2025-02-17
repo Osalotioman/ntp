@@ -22,9 +22,9 @@ jobs:
               issue_number: context.issue.number,
             });
 
-            const newBody = `${issue.body}`;
-            var newBody1 = "";
-            newBody.split('\n');
+            let newBody = issue.body.split('\n');
+            let newBody1 = "";
+            
             for(let i=0; i<newBody.length; ++i){
                 if(newBody[i].startsWith("### Screenshots") && i+2<newBody.length){
                     if(newBody[i+1] == "```bash" && newBody[i+2] == "```"){
