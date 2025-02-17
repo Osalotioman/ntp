@@ -1,21 +1,32 @@
-name: Edit Issue Body on New Issue
+name: Edit New Issue Body
 
 on:
   issues:
     types: [opened]
 
 jobs:
-  update-issue-body:
+  edit-issue-body:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Edit issue body
-        uses: octokit/request-action@v2.x
+        uses: actions/github-script@v6
         with:
-          route: /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
-          mediaType: '{"previews": ["mercy"]}'
-          data: '{"body": "This is the completely new body content for the issue.\\n\\n_This was updated by the bot._"}'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const newBody = `Thank you for creating this issue!\n\n${issue.body}\n\nWe will look into it shortly.`;
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: newBody,
+            });
