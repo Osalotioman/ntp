@@ -23,7 +23,7 @@ jobs:
             });
 
             const newBody = `${issue.body}`;
-            const newBody1 = "";
+            var newBody1 = "";
             newBody.split('\n');
             for(let i=0; i<newBody.length; ++i){
                 if(newBody[i].startsWith("### Screenshots") && i+2<newBody.length){
