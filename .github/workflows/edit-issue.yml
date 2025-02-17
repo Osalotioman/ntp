@@ -1,0 +1,17 @@
+name: Edit New Issue
+
+on:
+  issues:
+    types: [opened]  # Triggers when a new issue is opened
+
+jobs:
+  edit-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Edit Issue Body
+        uses: octokit/request-action@v2.x
+        with:
+          route: PATCH /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
+          body: '{"body": "**Edited Issue:**\n\n${{ github.event.issue.body }}\n\n_Auto-edited by bot._"}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
