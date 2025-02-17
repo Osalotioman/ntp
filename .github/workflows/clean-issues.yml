@@ -1,17 +1,17 @@
-name: Remove Empty Sections from Issue
+name: Edit New Issue Body
 
 on:
   issues:
     types: [opened]
 
 jobs:
-  remove-empty-sections:
+  edit-issue-body:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Remove empty sections
+      - name: Edit issue body
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -22,33 +22,22 @@ jobs:
               issue_number: context.issue.number,
             });
 
-            // Helper function to check if a section is empty
-            const isSectionEmpty = (section) => {
-              // Remove backticks, placeholders, and whitespace
-              const content = section
-                .replace(/```bash/g, '') // Remove code block markers
-                .replace(/```/g, '') // Remove any remaining backticks
-                .replace(/_No response_/g, '') // Remove placeholders
-                .trim(); // Remove leading/trailing whitespace
-
-              return !content; // Return true if the section is empty
-            };
-
-            // Split the issue body into sections
-            const sections = issue.body.split('### '); // Split by "###" to separate sections
-            let newBody = '';
-
-            // Iterate through sections and keep only non-empty ones
-            for (const section of sections) {
-              if (section.trim() && !isSectionEmpty(section)) {
-                newBody += `### ${section}\n\n`;
-              }
+            const newBody = `${issue.body}`;
+            newBody.split('\n');
+            for(let i=0; i<newBody.length; ++i){
+                if(newBody[i].startsWith("### Screenshots") && i+2<newBody.length){
+                    if(newBody[i+1] == "```bash" && newBody[i+2] == "```"){
+                        newBody[i] = "";
+                        newBody[i+1] = "";
+                        newBody[i+2] = "";
+                    }
+                }
             }
+            newBody = newBody.join('\n');
 
-            // Update the issue with the new body
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: newBody.trim(),
+              body: newBody,
             });
