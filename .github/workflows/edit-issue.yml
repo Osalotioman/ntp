@@ -2,7 +2,7 @@ name: Edit New Issue
 
 on:
   issues:
-    types: [opened]  # Runs when a new issue is opened
+    types: [opened]  # Trigger when an issue is opened
 
 jobs:
   edit-issue:
@@ -12,7 +12,8 @@ jobs:
         uses: octokit/request-action@v2.x
         with:
           route: PATCH /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
-          parameters: > 
+          mediaType: '{" previews": ["mercy"] }'  # Optional, if needed by API
+          body: |
             {
               "body": "**Edited Issue:**\n\n${{ github.event.issue.body }}\n\n_Auto-edited by bot._"
             }
