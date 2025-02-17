@@ -27,7 +27,7 @@ jobs:
             
             for(let i=0; i<newBody.length; ++i){
                 if(newBody[i].includes("### Screenshots") && i+3<newBody.length){
-                    if(newBody[i+1].includes("```bash") && newBody[i+30].includes("```")){
+                    if(newBody[i+1].includes("```bash") && newBody[i+3].includes("```")){
                         newBody[i] = "_-1";
                         newBody[i+1] = "_-1";
                         newBody[i+2] = "_-1";
