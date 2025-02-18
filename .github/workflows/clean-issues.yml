@@ -24,7 +24,7 @@ jobs:
 
             let newBody1 = issue.body;
 
-            if(issue.labels.some(label => label.name === "created-with-issues-template")){               
+            if(issue.labels.some(label => label.name === "issues-template")){               
                 let newBody = issue.body.split('\n');
                 newBody1 = "";
 
@@ -54,7 +54,7 @@ jobs:
                     }
                 }
             }
-                
+
             await github.rest.issues.update({
             owner: context.repo.owner,
             repo: context.repo.repo,
