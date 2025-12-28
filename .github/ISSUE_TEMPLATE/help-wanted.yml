@@ -1,6 +1,6 @@
 name: "Help Wanted"
 description: Create a new ticket for a help wanted issue.
-title: ""
+title: "[Help Wanted] "
 labels: [
   "help wanted"
 ]
