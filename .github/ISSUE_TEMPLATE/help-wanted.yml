@@ -4,12 +4,3 @@ title: "[Help Wanted] "
 labels: [
   "help wanted"
 ]
-body:
-  - type: textarea
-    id: description
-    attributes:
-      label: "Description"
-      description: Please enter an explicit description of your issue
-      placeholder: Short and explicit description of your incident...
-    validations:
-      required: true
