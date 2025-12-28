@@ -1,5 +1,5 @@
 name: "Help Wanted"
-description: Create a new issue for a help wanted.
+description: Create a new issue for help wanted.
 title: "[Help Wanted] "
 labels: [
   "help wanted"
